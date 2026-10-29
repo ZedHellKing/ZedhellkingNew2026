@@ -81,6 +81,19 @@ Add your Facebook cookies to `account.txt` (JSON array format from EditThisCooki
 
 ---
 
+## ◈ Testing
+
+Run the welcome-card test without logging in to Facebook:
+
+```bash
+npm run test:welcome
+```
+
+The test uses fake member and group data, disables HTTP requests, and verifies
+that a PNG card is sent even when profile and group images are unavailable.
+
+---
+
 ## ◈ Running the Bot
 
 ### 1. Add your admin UID
