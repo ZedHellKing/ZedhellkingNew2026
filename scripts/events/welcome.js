@@ -5,6 +5,8 @@ const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
 
+const LEGACY_DEFAULT_WELCOME_MESSAGE = "𝗪𝗲𝗹𝗰𝗼𝗺𝗲 {userName} 🎉\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n✦ Glad to have you here! Enjoy your stay and make great memories 🌸";
+
 module.exports = {
   config: {
     name: "welcome",
@@ -15,7 +17,7 @@ module.exports = {
 
   langs: {
     en: {
-      defaultWelcomeMessage: "𝗪𝗲𝗹𝗰𝗼𝗺𝗲 {userName} 🎉\n┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄\n✦ Glad to have you here! Enjoy your stay and make great memories 🌸",
+      defaultWelcomeMessage: "✦ 𝗪𝗘𝗟𝗖𝗢𝗠𝗘, {userName} ✦\n\nYou’ve entered the legendary realm of 𝗭𝗘𝗗 — built around greatness, ruled by style, and naturally led by its one and only king. 👑\n\nEnjoy your stay among legends. Try not to be overwhelmed. ✨",
       botAddedMessage:
         "━━━━━━━━━━━━━━━━━━━\n🤖 ᴛʜᴀɴᴋ ʏᴏᴜ ғᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ ᴛᴏ ᴛʜᴇ ɢʀᴏᴜᴘ! 💖\n\n⚙️ ʙᴏᴛ ᴘʀᴇꜰɪx : /\n📜 ᴛʏᴘᴇ /help ᴛᴏ sᴇᴇ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs\n\n✨ ʟᴇᴛ's ᴍᴀᴋᴇ ᴛʜɪs ɢʀᴏᴜᴘ ᴇᴠᴇɴ ᴍᴏʀᴇ ꜰᴜɴ ᴛᴏɢᴇᴛʜᴇʀ! 😄\n━━━━━━━━━━━━━━━━━━━"
     }
@@ -47,6 +49,8 @@ module.exports = {
       const memberCount = event.participantIDs.length;
 
       let { welcomeMessage = getLang("defaultWelcomeMessage") } = threadData.data;
+      if (welcomeMessage === LEGACY_DEFAULT_WELCOME_MESSAGE)
+        welcomeMessage = getLang("defaultWelcomeMessage");
       welcomeMessage = welcomeMessage
         .replace(/\{userName\}/g,    userName)
         .replace(/\{userTag\}/g,     userName)
@@ -253,6 +257,20 @@ async function createWelcomeCard({
   ctx.fillStyle = '#09090f';
   ctx.fillRect(0, 0, W, H);
 
+  const backgroundPath = path.join(__dirname, 'assets', 'zed-welcome-background.jpeg');
+  if (fs.existsSync(backgroundPath)) {
+    const background = await loadImage(backgroundPath);
+    const scale = Math.max(W / background.width, H / background.height);
+    const backgroundW = background.width * scale;
+    const backgroundH = background.height * scale;
+    ctx.save();
+    ctx.globalAlpha = 0.58;
+    ctx.drawImage(background, (W - backgroundW) / 2, (H - backgroundH) / 2, backgroundW, backgroundH);
+    ctx.restore();
+  }
+  ctx.fillStyle = 'rgba(7, 6, 13, 0.62)';
+  ctx.fillRect(0, 0, W, H);
+
   const rng = s => { let x = Math.sin(s) * 10000; return x - Math.floor(x); };
   ctx.fillStyle = 'rgba(255,255,255,0.014)';
   for (let i = 0; i < 280; i++) {
@@ -264,7 +282,7 @@ async function createWelcomeCard({
   const splitX = Math.round(W * 0.385);
   const PAD    = 44;  
 
-  ctx.fillStyle = '#0d0d16';
+  ctx.fillStyle = 'rgba(13,13,22,0.70)';
   ctx.fillRect(0, 0, splitX, H);
 
   {
@@ -392,7 +410,7 @@ async function createWelcomeCard({
   wGrad.addColorStop(1, 'rgba(255,255,255,0.55)');
   ctx.fillStyle   = wGrad;
   ctx.shadowColor = 'rgba(255,255,255,0.15)'; ctx.shadowBlur = 12;
-  ctx.fillText('Welcome To Our Group', rX, 90);
+  ctx.fillText("Welcome to Zed's Realm", rX, 90);
   ctx.restore();
 
   ctx.save();
@@ -537,7 +555,7 @@ async function createWelcomeCard({
     pGrad.addColorStop(1, 'rgba(46,204,113,1)');
     ctx.fillStyle = pGrad;
     ctx.shadowColor = 'rgba(100,200,255,0.55)'; ctx.shadowBlur = 16;
-    ctx.fillText('Powered By EryXenX', cx, cy + 8);
+    ctx.fillText('By ZedHellking', cx, cy + 8);
     ctx.restore();
   }
 
